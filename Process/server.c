@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #define MAX 50
 #define PORT 44444
+#define MAX_CLIENTS 1000
 
 void server(int sockId){
     char buff[MAX];
@@ -14,7 +15,7 @@ void server(int sockId){
         bzero(buff, MAX);
         //read message from client
         read(sockId, buff, sizeof(buff));
-        printf("Client data : %s\n", buff);
+        printf("Client : %s\n", buff);
         if (strncmp("end",buff,3) == 0)
         {
             printf("Server Exit.\n");
@@ -56,12 +57,20 @@ int main()
         printf("Server listening....\n");
     }
     len = sizeof(cli);
-    //accept data packets
-    connId = accept(sockId, (struct socketaddr*)&cli, &len);
-    if (connId < 0)
+    //accept data packets for multiple clients
+    int i=0;
+    while (1)
     {
-        printf("Server accept failed.\n");
+        connId = accept(sockId, (struct socketaddr*)&cli, &len);
+        if (connId < 0)
+        {
+            printf("Server accept failed.\n");
+        }
+        else{
+            fork();
+            server(connId);
+        }
+        i++;
     }
-    server(connId);
     close(sockId);
 }
