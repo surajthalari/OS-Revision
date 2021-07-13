@@ -6,7 +6,7 @@
 #include <limits.h>
 
 #define READER_COUNT 5
-#define WRITER_COUNT 5
+	#define WRITER_COUNT 5
 
 char * file_path;
 int resource_counter = 0;
@@ -86,14 +86,14 @@ void *writer(void *args){
 	{
 		pthread_cond_wait(&write_phase, &mutex);
 	}
-	resource_counter--;
+	resource_counter = -1;
 	pthread_mutex_unlock(&mutex);
 
 	//Writing file
 	write_file();
 
 	pthread_mutex_lock(&mutex);
-	resource_counter++;
+	resource_counter = 0;
 	pthread_cond_broadcast(&read_phase);
 	pthread_cond_broadcast(&write_phase);
 	pthread_mutex_unlock(&mutex);
