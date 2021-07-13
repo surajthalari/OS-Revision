@@ -86,14 +86,14 @@ void *writer(void *args){
 	{
 		pthread_cond_wait(&write_phase, &mutex);
 	}
-	resource_counter = -1;
+	resource_counter--;
 	pthread_mutex_unlock(&mutex);
 
 	//Writing file
 	write_file();
 
 	pthread_mutex_lock(&mutex);
-	resource_counter = 0;
+	resource_counter++;
 	pthread_cond_broadcast(&read_phase);
 	pthread_cond_broadcast(&write_phase);
 	pthread_mutex_unlock(&mutex);
